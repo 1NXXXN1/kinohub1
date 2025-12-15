@@ -126,9 +126,7 @@ export default function Home() {
   return (
     <section className="space-y-6 px-4 py-6 max-w-7xl mx-auto">
       {loading && <p className="text-sm text-mute">Загрузка…</p>}
-      <Section title="Популярные фильмы (ТОП 10)" items={films} tag="фильм" />
-      <Section title="Популярные сериалы (ТОП 10)" items={series} tag="сериал" />
-      <Section title="Популярные мультфильмы (ТОП 10)" items={cartoons} tag="мультфильм" />
+      <Section title="Популярные (ТОП 10)" items={films} tag="фильм" />
       {!loading && films.length === 0 && series.length === 0 && cartoons.length === 0 && (
         <p className="text-sm text-mute">Ничего не найдено. Проверьте ключи или добавьте TMDB ключ.</p>
       )}
