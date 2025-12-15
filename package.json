@@ -2,12 +2,12 @@
   "name": "kino-minimal",
   "private": true,
   "version": "1.0.0",
-  "packageManager": "pnpm@9.12.3",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "postinstall": "next telemetry disable || true"
+    "postinstall": "next telemetry disable || true",
+    "install": "npm install"
   },
   "dependencies": {
     "framer-motion": "^11.0.0",

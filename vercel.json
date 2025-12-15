@@ -1,5 +1,5 @@
 {
-  "buildCommand": "corepack enable pnpm && pnpm install --no-frozen-lockfile && pnpm build",
-  "installCommand": "corepack enable pnpm && pnpm install --no-frozen-lockfile",
+  "buildCommand": "npm install && npm run build",
+  "installCommand": "npm install",
   "outputDirectory": ".next"
 }
