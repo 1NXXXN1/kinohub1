@@ -1,8 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Grid } from '../../components/grid';
-import { MediaCard } from '../../components/media-card';
-import type { Media } from '../../lib/types';
+type Media = { id:string; title:string; poster?:string; year?: number|string; type?: string };
 
 export default function Page(){
   const [items, setItems] = useState<Media[]>([]);
@@ -19,10 +17,22 @@ export default function Page(){
   return (
     <section className="space-y-4">
       <h1 className="text-xl font-semibold">Saralanganlar</h1>
-      {items.length === 0 ? (
-        <p className="text-mute">Hozircha hech narsa yo'q.</p>
-      ) : (
-        <Grid>{items.map(m => <MediaCard key={m.id+m.title} m={m} />)}</Grid>
+      {items.length === 0 ? <p className="text-mute">Hozircha hech narsa yo‘q.</p> : (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          {items.map(m => (
+            <div key={m.id+m.title} className="group overflow-hidden rounded-2xl bg-card ring-1 ring-white/5">
+              <a href={`/watch/${m.id}`} className="block">
+                <div className="aspect-[2/3] overflow-hidden bg-black/20">
+                  {m.poster ? <img src={m.poster} alt={m.title} className="h-full w-full object-cover"/> : <div className="grid h-full place-content-center text-mute">No poster</div>}
+                </div>
+                <div className="space-y-1 p-3">
+                  <div className="line-clamp-1 text-sm font-medium">{m.title}</div>
+                  <div className="text-xs text-mute">{m.year ?? '—'} · {m.type ?? 'film'}</div>
+                </div>
+              </a>
+            </div>
+          ))}
+        </div>
       )}
     </section>
   );

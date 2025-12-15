@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { fetchTop100Films, fetchTopSeries, searchKinopoisk, fallbackPopularFromTMDB } from '../lib/client-api';
+import { fetchTop100Films, fetchTopSeries, fetchTopCartoons, searchKinopoisk, fallbackPopularFromTMDB, take } from '../lib/client-api';
 
 type KpFilm = {
   filmId?: number;
@@ -18,20 +18,29 @@ type KpFilm = {
   type?: string;
 };
 
-function titleOf(x: KpFilm) {
-  return x.nameRu || x.nameEn || x.nameOriginal || "—";
-}
-function idOf(x: KpFilm) {
-  return String(x.kinopoiskId ?? x.filmId ?? "");
-}
-function posterOf(x: KpFilm) {
-  return x.posterUrlPreview || x.posterUrl || "";
+function titleOf(x: KpFilm) { return x.nameRu || x.nameEn || x.nameOriginal || "—"; }
+function idOf(x: KpFilm) { return String(x.kinopoiskId ?? x.filmId ?? ""); }
+function posterOf(x: KpFilm) { return x.posterUrlPreview || x.posterUrl || ""; }
+
+function FavButton({ item }: { item: KpFilm }){
+  const id = idOf(item);
+  const key = 'favorites.v1';
+  const onClick = (e: any) => {
+    e.preventDefault();
+    const raw = localStorage.getItem(key);
+    const list = raw ? JSON.parse(raw) : {};
+    if (list[id]) delete list[id]; else list[id] = { id, title: titleOf(item), poster: posterOf(item), year: item.year, type: (item.type||'film').toLowerCase() };
+    localStorage.setItem(key, JSON.stringify(list));
+    window.dispatchEvent(new Event('favorites:changed'));
+  };
+  return <button onClick={onClick} className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-xs text-white/90 hover:bg-black/70">★</button>;
 }
 
 export default function Home() {
   const [q, setQ] = useState('');
   const [films, setFilms] = useState<KpFilm[]>([]);
   const [serials, setSerials] = useState<KpFilm[]>([]);
+  const [cartoons, setCartoons] = useState<KpFilm[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,29 +51,31 @@ export default function Home() {
         if (q.trim().length > 0) {
           const data = await searchKinopoisk(q.trim(), 1);
           if (cancelled) return;
-          setFilms((data.films || []).filter((x: KpFilm) => (x.type || '').toLowerCase() !== 'tv_series'));
-          setSerials((data.films || []).filter((x: KpFilm) => (x.type || '').toLowerCase() === 'tv_series'));
+          const all = data.films || [];
+          setFilms(take(all.filter((x: KpFilm) => (x.type || '').toLowerCase() !== 'tv_series' && (x.type || '').toLowerCase() !== 'cartoon'), 10));
+          setSerials(take(all.filter((x: KpFilm) => (x.type || '').toLowerCase() === 'tv_series'), 10));
+          setCartoons(take(all.filter((x: KpFilm) => (x.type || '').toLowerCase() === 'cartoon'), 10));
         } else {
-          // Load top 100 films
           try {
             const topFilms = await fetchTop100Films(1);
-            if (!cancelled) setFilms(topFilms.films || topFilms.items || []);
+            if (!cancelled) setFilms(take((topFilms.films || topFilms.items || []), 10));
           } catch {
             const tmdb = await fallbackPopularFromTMDB();
-            if (!cancelled) setFilms((tmdb.results || []).map((r: any) => ({
+            if (!cancelled) setFilms(take((tmdb.results || []).map((r: any) => ({
               filmId: r.id,
               nameRu: r.title || r.name,
               posterUrlPreview: r.poster_path ? `https://image.tmdb.org/t/p/w342${r.poster_path}` : '',
               year: r.release_date ? Number(r.release_date.slice(0,4)) : undefined
-            })));
+            })), 10));
           }
-          // Load top series
           try {
             const topSeries = await fetchTopSeries(1);
-            if (!cancelled) setSerials(topSeries.items || topSeries.films || []);
-          } catch {
-            // silently ignore
-          }
+            if (!cancelled) setSerials(take((topSeries.items || topSeries.films || []), 10));
+          } catch {}
+          try {
+            const topCartoons = await fetchTopCartoons(1);
+            if (!cancelled) setCartoons(take((topCartoons.items || topCartoons.films || []), 10));
+          } catch {}
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -73,6 +84,34 @@ export default function Home() {
     run();
     return () => { cancelled = true; };
   }, [q]);
+
+  const Section = ({ title, items, tag }:{ title:string, items:KpFilm[], tag:'film'|'serial'|'cartoon'}) => (
+    items.length === 0 ? null : (
+      <div className="space-y-3">
+        <h2 className="text-lg font-semibold">{title}</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          {items.map((m) => (
+            <motion.div key={idOf(m)+titleOf(m)} whileHover={{ scale: 1.02 }} className="group relative overflow-hidden rounded-2xl bg-[#12121a] ring-1 ring-white/5">
+              <Link href={`/watch/${idOf(m)}`} className="block">
+                <div className="aspect-[2/3] relative bg-black/20">
+                  {posterOf(m) ? (
+                    <Image src={posterOf(m)} alt={titleOf(m)} fill sizes="(max-width: 768px) 50vw, 20vw" className="object-cover transition-transform duration-300 group-hover:scale-105"/>
+                  ) : (
+                    <div className="grid place-content-center text-gray-500 h-full">No poster</div>
+                  )}
+                </div>
+                <div className="p-3">
+                  <div className="line-clamp-1 text-sm font-medium">{titleOf(m)}</div>
+                  <div className="text-xs text-gray-400">{m.year ?? '—'} · {tag}</div>
+                </div>
+              </Link>
+              <FavButton item={m} />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    )
+  );
 
   return (
     <section className="space-y-6 px-4 py-6 max-w-7xl mx-auto">
@@ -87,57 +126,11 @@ export default function Home() {
 
       {loading && <p className="text-sm text-gray-400">Yuklanmoqda…</p>}
 
-      {films.length > 0 && (
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold">Mashhur filmlar</h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {films.map((m) => (
-              <motion.div key={idOf(m)+titleOf(m)} whileHover={{ scale: 1.02 }} className="group overflow-hidden rounded-2xl bg-[#12121a] ring-1 ring-white/5">
-                <Link href={`/watch/${idOf(m)}`} className="block">
-                  <div className="aspect-[2/3] relative bg-black/20">
-                    {posterOf(m) ? (
-                      <Image src={posterOf(m)} alt={titleOf(m)} fill sizes="(max-width: 768px) 50vw, 20vw" className="object-cover transition-transform duration-300 group-hover:scale-105"/>
-                    ) : (
-                      <div className="grid place-content-center text-gray-500 h-full">No poster</div>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <div className="line-clamp-1 text-sm font-medium">{titleOf(m)}</div>
-                    <div className="text-xs text-gray-400">{m.year ?? '—'} · film</div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      )}
+      <Section title="Mashhur filmlar (TOP 10)" items={films} tag="film" />
+      <Section title="Mashhur seriallar (TOP 10)" items={serials} tag="serial" />
+      <Section title="Mashhur multfilmlar (TOP 10)" items={cartoons} tag="cartoon" />
 
-      {serials.length > 0 && (
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold">Mashhur seriallar</h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {serials.map((m) => (
-              <motion.div key={idOf(m)+titleOf(m)} whileHover={{ scale: 1.02 }} className="group overflow-hidden rounded-2xl bg-[#12121a] ring-1 ring-white/5">
-                <Link href={`/watch/${idOf(m)}`} className="block">
-                  <div className="aspect-[2/3] relative bg-black/20">
-                    {posterOf(m) ? (
-                      <Image src={posterOf(m)} alt={titleOf(m)} fill sizes="(max-width: 768px) 50vw, 20vw" className="object-cover transition-transform duration-300 group-hover:scale-105"/>
-                    ) : (
-                      <div className="grid place-content-center text-gray-500 h-full">No poster</div>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <div className="line-clamp-1 text-sm font-medium">{titleOf(m)}</div>
-                    <div className="text-xs text-gray-400">{m.year ?? '—'} · serial</div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {!loading && films.length === 0 && serials.length === 0 && (
+      {!loading && films.length === 0 && serials.length === 0 && cartoons.length === 0 && (
         <p className="text-sm text-gray-400">Hech narsa topilmadi. Kalitlarni tekshiring yoki TMDB kalitini qo‘shing.</p>
       )}
     </section>

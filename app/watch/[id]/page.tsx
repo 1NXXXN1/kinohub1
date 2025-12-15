@@ -12,7 +12,7 @@ export default function Page({ params }: { params: { id: string } }){
       <div className="aspect-video overflow-hidden rounded-2xl bg-black ring-1 ring-white/10">
         <iframe src={src} allowFullScreen className="h-full w-full"/>
       </div>
-      <p className="text-xs text-mute">Manba: linktodo.ws · ID Kinopoisk API dan olinadi.</p>
+      <p className="text-xs text-gray-400">Manba: linktodo.ws · ID Kinopoisk API dan olinadi.</p>
     </section>
   );
 }

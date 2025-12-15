@@ -5,10 +5,10 @@ const nextConfig = {
   typescript: { ignoreBuildErrors: true },
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'kinopoiskapiunofficial.tech' },
-      { protocol: 'https', hostname: 'kinopoiskapiunofficial.tech', pathname: '/**' },
       { protocol: 'https', hostname: 'image.tmdb.org' },
-      { protocol: 'https', hostname: '**.kinopoisk.ru' }
+      { protocol: 'https', hostname: '**.kinopoisk.ru' },
+      { protocol: 'https', hostname: 'avatars.mds.yandex.net' },
+      { protocol: 'https', hostname: 'kinopoiskapiunofficial.tech' }
     ]
   }
 };
