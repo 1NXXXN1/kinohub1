@@ -1,16 +1,13 @@
-# Kino Minimal (Netlify Final Version)
-Optimized Next.js cinema site using Kinopoisk Unofficial API with multi-key fallback and TMDB support.
+# KinoHub (Netlify Poster Fixed)
+Next.js App Router kino sayti: TOP-100 filmlar va seriallar (poster bilan) + qidiruv.
+Client-side fetch: Kinopoisk (multi-key fallback) va TMDB zaxira.
 
-## Deployment (Netlify)
-1. Upload or connect this repository to Netlify.
-2. Environment variables:
-   - KINOPOISK_API_BASE = https://kinopoiskapiunofficial.tech
-   - KINOPOISK_API_KEYS = key1,key2,key3
-   - TMDB_API_BASE = https://api.themoviedb.org/3
-   - TMDB_API_KEY = your_tmdb_key
-3. Build command:
-   npm install --no-audit --no-fund && npm run build
-4. Publish directory:
-   .next
+## Netlify Environment Variables
+- NEXT_PUBLIC_KINOPOISK_API_BASE = https://kinopoiskapiunofficial.tech
+- NEXT_PUBLIC_KINOPOISK_API_KEYS = key1,key2,key3
+- NEXT_PUBLIC_TMDB_API_KEY = your_tmdb_key
 
-TypeScript errors are ignored during build for stable deployment.
+## Build
+- Netlify `netlify.toml` tayyor.
+- Build: `npm install --no-audit --no-fund && npm run build`
+- Publish: `.next`
