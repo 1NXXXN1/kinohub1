@@ -1,16 +1,22 @@
-# KinoHub — Netlify Final (Heart + Title)
-- Navbar: faqat Saralanganlar
-- Home: TOP 10 film, TOP 10 serial, TOP 10 multfilm (poster)
-- Heart (🤍 → ❤️) animatsiyasi: Framer Motion
-- Watch title: "Film nomi (yil) | NX" + description
-- API key rotatsiyasi (NEXT_PUBLIC_KINOPOISK_API_KEYS) + TMDB fallback
-- Netlify: `netlify.toml` (npm build)
+# NXMedia — Optimized (Netlify)
+Русскоязычный минималистичный кинопортал.
 
-## Environment (Netlify)
-NEXT_PUBLIC_KINOPOISK_API_BASE=https://kinopoiskapiunofficial.tech
-NEXT_PUBLIC_KINOPOISK_API_KEYS=key1,key2,key3
+## Возможности
+- Хедер: логотип **NX**(white) + **Media**(blue), поиск в центре, ссылка «Избранное» справа
+- Главная: ТОП 10 фильмов/сериалов/мультфильмов (Promise.all, локальный кэш 30с)
+- Поиск: отдельная страница `/search` с дебаунсом 300мс
+- Избранное: локально (localStorage), кнопка-сердце 🤍 → ❤️ с анимацией
+- Просмотр: заголовок «Название (год) | NX» и описание
+- Прокси API `/api/kp` с ротацией ключей, кэшом CDN (s-maxage=60), без CORS проблем
+- Netlify build: npm + `netlify.toml`
+
+## Переменные окружения (Netlify)
+KINOPOISK_API_KEYS=key1,key2,key3
+KINOPOISK_API_BASE=https://kinopoiskapiunofficial.tech
 NEXT_PUBLIC_TMDB_API_KEY=your_tmdb_key
+# (опционально) Если нужна генерация абсолютных ссылок на /api:
+NEXT_PUBLIC_SITE_URL=https://<ваш-домен>
 
-## Build
+## Сборка
 npm install --no-audit --no-fund && npm run build
-Publish: .next
+Папка публикации: .next

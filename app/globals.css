@@ -4,3 +4,4 @@
 :root{color-scheme:dark}
 html,body{height:100%}
 body{@apply bg-bg text-ink antialiased}
+input::placeholder{color:#8b8b98}

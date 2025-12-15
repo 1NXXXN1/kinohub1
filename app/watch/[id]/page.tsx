@@ -3,20 +3,11 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 async function getFilmData(id: string) {
-  const keys = (process.env.NEXT_PUBLIC_KINOPOISK_API_KEYS || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const base = process.env.NEXT_PUBLIC_KINOPOISK_API_BASE || "https://kinopoiskapiunofficial.tech";
-  for (const key of keys) {
-    try {
-      const res = await fetch(`${base}/api/v2.2/films/${id}`, {
-        headers: { "X-API-KEY": key, "Content-Type": "application/json" },
-        cache: "no-store",
-      });
-      if (res.ok) return res.json();
-    } catch {}
-  }
+  // Use server proxy to hide keys and avoid CORS
+  const base = process.env.KINOPOISK_API_BASE || "https://kinopoiskapiunofficial.tech";
+  // Call via our API route to get caching and rotation
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/kp?path=/api/v2.2/films/${id}`, { cache: "no-store" });
+  if (res.ok) return res.json();
   return null;
 }
 
@@ -24,14 +15,14 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   const data = await getFilmData(params.id);
   if (data && (data.nameRu || data.nameOriginal)) {
     const title = `${data.nameRu || data.nameOriginal}${data.year ? ` (${data.year})` : ""} | NX`;
-    return { title, description: data.description || "Film haqida ma'lumot" };
+    return { title, description: data.description || "Информация о фильме" };
   }
-  return { title: "Film | NX" };
+  return { title: "Фильм | NX" };
 }
 
 export default async function Page({ params }: { params: { id: string } }){
   const data = await getFilmData(params.id);
-  const title = data?.nameRu || data?.nameOriginal || "Film";
+  const title = data?.nameRu || data?.nameOriginal || "Фильм";
   const year = data?.year ? ` (${data.year})` : "";
   const src = `https://api.linktodo.ws/embed/kp/${encodeURIComponent(params.id)}?host=kinobd.net`;
   return (
