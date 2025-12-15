@@ -1,28 +1,18 @@
-# Kino Minimal (Vercel-ready, pnpm)
-Minimal Next.js (App Router) kino sayti. Kinopoisk Unofficial API va ixtiyoriy TMDB bilan ishlaydi. Tailwind va framer-motion bilan sodda animatsiyalar.
+# Kino Minimal (Final Vercel Version)
+Optimized Next.js (App Router) cinema site using Kinopoisk Unofficial API with multi-key fallback and TMDB support.
 
-## O'rnatish (lokal)
-```bash
-pnpm i
-cp .env.example .env.local
-# .env.local ichiga API kalitlarini kiriting
-pnpm dev
-```
+## Deployment (Vercel)
+1. Upload this ZIP to Vercel (New Project → Upload).
+2. Add environment variables:
+   - KINOPOISK_API_BASE = https://kinopoiskapiunofficial.tech
+   - KINOPOISK_API_KEYS = key1,key2,key3
+   - TMDB_API_BASE = https://api.themoviedb.org/3
+   - TMDB_API_KEY = your_tmdb_key
+3. Build will automatically run with `npm install && npm run build`.
 
-## Vercel
-- Zipni Vercel'ga yuklang (New Project -> Import... -> Upload).
-- Environment Variables bo'limiga quyini kiriting:
-  - KINOPOISK_API_BASE = https://kinopoiskapiunofficial.tech
-  - KINOPOISK_API_KEY = <kalitingiz>
-  - (ixtiyoriy) TMDB_API_BASE = https://api.themoviedb.org/3
-  - (ixtiyoriy) TMDB_API_KEY = <kalit>
-- Build Command: *avtomatik* (`pnpm build`) — `vercel.json` ham bor.
-- Output dir: `.next`
-
-## Bo'limlar
-- /films, /serials, /multfilms, /favorites
-- /watch/[id] — pleyer: https://api.linktodo.ws/embed/kp/ID?host=kinobd.net
-
-## Eslatma
-- Favorites localStorage yordamida ishlaydi.
-- TMDB bo'lmasa ham sayt ishlaydi (faqat Kinopoisk).
+## Features
+- Minimal UI (Tailwind + framer-motion)
+- Multi-API key Kinopoisk fallback (automatic rotation)
+- TMDB enrichment fallback
+- Favorites stored in localStorage
+- Player: https://api.linktodo.ws/embed/kp/ID?host=kinobd.net
