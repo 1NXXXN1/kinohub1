@@ -1,9 +1,10 @@
-# KinoHub — Netlify (Favorites Only)
+# KinoHub — Netlify Final (Heart + Title)
 - Navbar: faqat Saralanganlar
-- Home: TOP 10 filmlar + TOP 10 seriallar + TOP 10 multfilmlar
-- API key rotatsiyasi: NEXT_PUBLIC_KINOPOISK_API_KEYS=key1,key2,key3
-- TMDB fallback: NEXT_PUBLIC_TMDB_API_KEY
-- Netlify: `netlify.toml` tayyor
+- Home: TOP 10 film, TOP 10 serial, TOP 10 multfilm (poster)
+- Heart (🤍 → ❤️) animatsiyasi: Framer Motion
+- Watch title: "Film nomi (yil) | NX" + description
+- API key rotatsiyasi (NEXT_PUBLIC_KINOPOISK_API_KEYS) + TMDB fallback
+- Netlify: `netlify.toml` (npm build)
 
 ## Environment (Netlify)
 NEXT_PUBLIC_KINOPOISK_API_BASE=https://kinopoiskapiunofficial.tech

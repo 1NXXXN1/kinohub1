@@ -22,18 +22,41 @@ function titleOf(x: KpFilm) { return x.nameRu || x.nameEn || x.nameOriginal || "
 function idOf(x: KpFilm) { return String(x.kinopoiskId ?? x.filmId ?? ""); }
 function posterOf(x: KpFilm) { return x.posterUrlPreview || x.posterUrl || ""; }
 
-function FavButton({ item }: { item: KpFilm }){
+function HeartButton({ item }: { item: KpFilm }){
   const id = idOf(item);
   const key = 'favorites.v1';
-  const onClick = (e: any) => {
+  const [active, setActive] = useState(false);
+  useEffect(() => {
+    const raw = localStorage.getItem(key);
+    if (!raw) return;
+    const list = JSON.parse(raw);
+    setActive(!!list[id]);
+  }, [id]);
+  const toggle = (e: any) => {
     e.preventDefault();
     const raw = localStorage.getItem(key);
     const list = raw ? JSON.parse(raw) : {};
-    if (list[id]) delete list[id]; else list[id] = { id, title: titleOf(item), poster: posterOf(item), year: item.year, type: (item.type||'film').toLowerCase() };
+    if (list[id]) { delete list[id]; setActive(false); }
+    else {
+      list[id] = { id, title: titleOf(item), poster: posterOf(item), year: item.year, type: (item.type||'film').toLowerCase() };
+      setActive(true);
+    }
     localStorage.setItem(key, JSON.stringify(list));
     window.dispatchEvent(new Event('favorites:changed'));
   };
-  return <button onClick={onClick} className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-xs text-white/90 hover:bg-black/70">★</button>;
+  return (
+    <motion.button
+      onClick={toggle}
+      whileTap={{ scale: 0.85 }}
+      animate={{ scale: active ? 1.25 : 1, color: active ? '#ef4444' : '#ffffffcc' }}
+      transition={{ type: 'spring', stiffness: 400, damping: 12 }}
+      className="absolute right-2 top-2 rounded-full bg-black/45 p-1.5 text-lg leading-none select-none"
+      aria-label={active ? 'Saralanganlardan chiqarish' : 'Saralanganlarga qo‘shish'}
+      title={active ? 'Saralanganlardan chiqarish' : 'Saralanganlarga qo‘shish'}
+    >
+      {active ? '❤️' : '🤍'}
+    </motion.button>
+  );
 }
 
 export default function Home() {
@@ -91,21 +114,21 @@ export default function Home() {
         <h2 className="text-lg font-semibold">{title}</h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {items.map((m) => (
-            <motion.div key={idOf(m)+titleOf(m)} whileHover={{ scale: 1.02 }} className="group relative overflow-hidden rounded-2xl bg-[#12121a] ring-1 ring-white/5">
+            <motion.div key={idOf(m)+titleOf(m)} whileHover={{ scale: 1.02 }} className="group relative overflow-hidden rounded-2xl bg-card ring-1 ring-white/5">
               <Link href={`/watch/${idOf(m)}`} className="block">
                 <div className="aspect-[2/3] relative bg-black/20">
                   {posterOf(m) ? (
                     <Image src={posterOf(m)} alt={titleOf(m)} fill sizes="(max-width: 768px) 50vw, 20vw" className="object-cover transition-transform duration-300 group-hover:scale-105"/>
                   ) : (
-                    <div className="grid place-content-center text-gray-500 h-full">No poster</div>
+                    <div className="grid place-content-center text-mute h-full">No poster</div>
                   )}
                 </div>
                 <div className="p-3">
                   <div className="line-clamp-1 text-sm font-medium">{titleOf(m)}</div>
-                  <div className="text-xs text-gray-400">{m.year ?? '—'} · {tag}</div>
+                  <div className="text-xs text-mute">{m.year ?? '—'} · {tag}</div>
                 </div>
               </Link>
-              <FavButton item={m} />
+              <HeartButton item={m} />
             </motion.div>
           ))}
         </div>
@@ -120,18 +143,18 @@ export default function Home() {
           value={q}
           onChange={(e)=>setQ(e.target.value)}
           placeholder="Qidirish…"
-          className="w-full rounded-xl bg-[#12121a] px-3 py-2 text-sm outline-none ring-1 ring-white/5 focus:ring-2 focus:ring-white/10"
+          className="w-full rounded-xl bg-card px-3 py-2 text-sm outline-none ring-1 ring-white/5 focus:ring-2 focus:ring-white/10"
         />
       </div>
 
-      {loading && <p className="text-sm text-gray-400">Yuklanmoqda…</p>}
+      {loading && <p className="text-sm text-mute">Yuklanmoqda…</p>}
 
       <Section title="Mashhur filmlar (TOP 10)" items={films} tag="film" />
       <Section title="Mashhur seriallar (TOP 10)" items={serials} tag="serial" />
       <Section title="Mashhur multfilmlar (TOP 10)" items={cartoons} tag="cartoon" />
 
       {!loading && films.length === 0 && serials.length === 0 && cartoons.length === 0 && (
-        <p className="text-sm text-gray-400">Hech narsa topilmadi. Kalitlarni tekshiring yoki TMDB kalitini qo‘shing.</p>
+        <p className="text-sm text-mute">Hech narsa topilmadi. Kalitlarni tekshiring yoki TMDB kalitini qo‘shing.</p>
       )}
     </section>
   );

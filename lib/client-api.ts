@@ -2,10 +2,7 @@ const KP_BASE = process.env.NEXT_PUBLIC_KINOPOISK_API_BASE || "https://kinopoisk
 const KP_KEYS = (process.env.NEXT_PUBLIC_KINOPOISK_API_KEYS || "").split(",").map(s => s.trim()).filter(Boolean);
 const TMDB_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY || "";
 
-function* roundRobin(arr: string[]) {
-  let i = 0;
-  while (true) { yield arr[i % arr.length]; i++; }
-}
+function* roundRobin(arr: string[]) { let i = 0; while (true) { yield arr[i % arr.length]; i++; } }
 const keyGen = roundRobin(KP_KEYS);
 
 async function kpFetch(path: string): Promise<any> {
