@@ -1,12 +1,8 @@
-'use client';
 
-import { Suspense } from 'react';
+export const revalidate = 3600;
+
 import SearchClient from './search-client';
 
-export default function Page() {
-  return (
-    <Suspense fallback={<p className="text-sm text-mute">Загрузка поиска…</p>}>
-      <SearchClient />
-    </Suspense>
-  );
+export default function Page({ searchParams }: any) {
+  return <SearchClient query={searchParams?.q || ''} />;
 }
