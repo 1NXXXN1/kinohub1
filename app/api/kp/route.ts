@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 
 const BASE = 'https://kinopoiskapiunofficial.tech';
-const KEYS = (process.env.KINOPOISK_API_KEYS || '').split(',').map(k => k.trim()).filter(Boolean);
+const KEYS = (process.env.KINOPOISK_API_KEYS || '')
+  .split(',')
+  .map((k) => k.trim())
+  .filter(Boolean);
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -14,28 +17,17 @@ export async function GET(req: Request) {
   for (const key of KEYS) {
     try {
       const res = await fetch(`${BASE}${path}`, {
-        headers: {
-          'X-API-KEY': key,
-          'Accept': 'application/json'
-        },
-        cache: 'no-store'
+        headers: { 'X-API-KEY': key },
+        cache: 'no-store',
       });
 
-      if (res.ok) {
-        return NextResponse.json(await res.json());
-      }
-
-      // agar noto‘g‘ri endpoint bo‘lsa → keyingi kalitga o‘tmaymiz
+      if (res.ok) return NextResponse.json(await res.json());
       if (res.status === 404) break;
-
-    } catch (e) {
-      // keyingi API key bilan davom etamiz
-      continue;
-    }
+    } catch {}
   }
 
   return NextResponse.json(
-    { error: 'Kinopoisk API failed (check endpoint or keys)' },
+    { error: 'Kinopoisk API failed' },
     { status: 502 }
   );
 }
