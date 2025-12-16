@@ -1,6 +1,5 @@
-export const revalidate = 3600;
-
 'use client';
+
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';

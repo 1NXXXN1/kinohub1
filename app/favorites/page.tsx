@@ -1,6 +1,5 @@
-export const revalidate = 3600;
-
 'use client';
+
 import { useEffect, useState } from 'react';
 type Media = { id:string; title:string; poster?:string; year?: number|string; type?: string };
 

@@ -1,6 +1,5 @@
-export const revalidate = 3600;
-
 'use client';
+
 import { Suspense } from 'react';
 import SearchClient from './search-client';
 
