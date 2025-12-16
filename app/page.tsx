@@ -105,7 +105,7 @@ export default function Home() {
               <Link href={`/watch/${idOf(m)}`} className="block">
                 <div className="aspect-[2/3] relative bg-black/20">
                   {posterOf(m) ? (
-                    <Image src={posterOf(m)} alt={titleOf(m)} fill sizes="(max-width: 768px) 50vw, 20vw" className="object-cover transition-transform duration-300 group-hover:scale-105"/>
+                    <Image src={posterOf(m)} alt={titleOf(m)} fill sizes="(max-width: 640px) 50vw, 160px" loading="lazy" className="object-cover transition-transform duration-300 group-hover:scale-105"/>
                   ) : (
                     <div className="grid place-content-center text-mute h-full">Нет постера</div>
                   )}
