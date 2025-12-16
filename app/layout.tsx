@@ -1,3 +1,5 @@
+export const revalidate = 3600;
+
 import './globals.css';
 import Link from 'next/link';
 import { SearchBar } from '../components/SearchBar';

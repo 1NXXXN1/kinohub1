@@ -1,15 +1,12 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   reactStrictMode: true,
-  typedRoutes: true,
-  typescript: { ignoreBuildErrors: true },
-  images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: 'image.tmdb.org' },
-      { protocol: 'https', hostname: '**.kinopoisk.ru' },
-      { protocol: 'https', hostname: 'avatars.mds.yandex.net' },
-      { protocol: 'https', hostname: 'kinopoiskapiunofficial.tech' }
-    ]
+  images: { unoptimized: true },
+  experimental: {
+    optimizeCss: true,
+    scrollRestoration: true
   }
 };
 module.exports = nextConfig;
