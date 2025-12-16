@@ -1,3 +1,6 @@
+
+'use client';
+import { useFavoritesStore } from '../../../lib/store/favorites';
 'use client';
 
 import { useEffect, useState } from 'react';

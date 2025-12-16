@@ -1,3 +1,4 @@
+import Poster from './Poster';
 'use client';
 import { Media } from '../lib/types';
 import Link from 'next/link';
