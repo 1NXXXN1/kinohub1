@@ -1,4 +1,4 @@
-import FavoritesHydrator from '@/components/FavoritesHydrator';
+import FavoritesHydrator from '../components/FavoritesHydrator';
 import './globals.css';
 import Link from 'next/link';
 import { SearchBar } from '../components/SearchBar';
