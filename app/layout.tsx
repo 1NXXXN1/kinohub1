@@ -3,7 +3,7 @@ import './globals.css';
 import Link from 'next/link';
 import { SearchBar } from '../components/SearchBar';
 
-export const metadata = { title: 'NXMedia', description: 'Минималистичный кинопортал' };
+export const metadata = { title: 'NXMEDIA', description: 'Мини кинопортал' };
 
 export default function RootLayout({ children }: { children: React.ReactNode }){
   return (
@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }){
             <div className="mx-auto max-w-7xl px-4 py-3 grid grid-cols-3 items-center">
               <div className="justify-self-start">
                 <Link href="/" className="text-lg font-semibold tracking-tight">
-                  <span className="text-white">NX</span><span className="text-blue-400">Media</span>
+                  <span className="text-white">NX</span><span className="text-blue-400">MEDIA</span>
                 </Link>
               </div>
               <div className="justify-self-center w-full max-w-md">
@@ -26,7 +26,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }){
             </div>
           </header>
           <main className="py-6">{children}</main>
-          <footer className="py-10 text-center text-sm text-gray-500">© {new Date().getFullYear()} NXMedia</footer>
+          <footer className="py-10 text-center text-sm text-gray-500">© {new Date().getFullYear()} | <Link href="https://t.me/nodir_khajiev" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">NX</Link>
+          </footer>
         </div>
         <FavoritesHydrator />
 </body>
