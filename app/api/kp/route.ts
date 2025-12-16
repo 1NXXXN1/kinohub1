@@ -1,33 +1,46 @@
 import { NextResponse } from 'next/server';
 
-const BASE = 'https://kinopoiskapiunofficial.tech';
-const KEYS = (process.env.KINOPOISK_API_KEYS || '')
-  .split(',')
-  .map((k) => k.trim())
-  .filter(Boolean);
-
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const path = searchParams.get('path');
 
   if (!path) {
-    return NextResponse.json({ error: 'Missing path' }, { status: 400 });
+    return NextResponse.json({ error: 'No path' }, { status: 400 });
   }
 
-  for (const key of KEYS) {
-    try {
-      const res = await fetch(`${BASE}${path}`, {
-        headers: { 'X-API-KEY': key },
-        cache: 'no-store',
-      });
+  const keys = process.env.KINOPOISK_API_KEYS?.split(',') || [];
+  let lastError: any = null;
 
-      if (res.ok) return NextResponse.json(await res.json());
-      if (res.status === 404) break;
-    } catch {}
+  for (const key of keys) {
+    try {
+      const res = await fetch(
+        `https://kinopoiskapiunofficial.tech${path}`,
+        {
+          headers: {
+            'X-API-KEY': key.trim(),
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (res.ok) {
+        const data = await res.json();
+        return new NextResponse(JSON.stringify(data), {
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=3600'
+          }
+        });
+      }
+
+      lastError = await res.text();
+    } catch (e) {
+      lastError = e;
+    }
   }
 
   return NextResponse.json(
-    { error: 'Kinopoisk API failed' },
+    { error: 'All API keys failed', details: String(lastError) },
     { status: 502 }
   );
 }

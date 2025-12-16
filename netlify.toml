@@ -1,4 +1,6 @@
 [build]
-  command = "npm install --no-audit --no-fund && npm run build"
-  publish = ".next"
-  node_version = "22.21.1"
+command = "npm install --no-audit --no-fund && npm run build"
+publish = ".next"
+
+[[plugins]]
+package = "@netlify/plugin-nextjs"
