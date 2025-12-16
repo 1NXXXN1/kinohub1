@@ -1,46 +1,33 @@
 import { NextResponse } from 'next/server';
 
+const BASE = 'https://kinopoiskapiunofficial.tech';
+const KEYS = (process.env.KINOPOISK_API_KEYS || '')
+  .split(',')
+  .map((k) => k.trim())
+  .filter(Boolean);
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const path = searchParams.get('path');
 
   if (!path) {
-    return NextResponse.json({ error: 'No path' }, { status: 400 });
+    return NextResponse.json({ error: 'Missing path' }, { status: 400 });
   }
 
-  const keys = process.env.KINOPOISK_API_KEYS?.split(',') || [];
-  let lastError: any = null;
-
-  for (const key of keys) {
+  for (const key of KEYS) {
     try {
-      const res = await fetch(
-        `https://kinopoiskapiunofficial.tech${path}`,
-        {
-          headers: {
-            'X-API-KEY': key.trim(),
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      const res = await fetch(`${BASE}${path}`, {
+        headers: { 'X-API-KEY': key },
+        cache: 'no-store',
+      });
 
-      if (res.ok) {
-        const data = await res.json();
-        return new NextResponse(JSON.stringify(data), {
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=3600'
-          }
-        });
-      }
-
-      lastError = await res.text();
-    } catch (e) {
-      lastError = e;
-    }
+      if (res.ok) return NextResponse.json(await res.json());
+      if (res.status === 404) break;
+    } catch {}
   }
 
   return NextResponse.json(
-    { error: 'All API keys failed', details: String(lastError) },
+    { error: 'Kinopoisk API failed' },
     { status: 502 }
   );
 }
