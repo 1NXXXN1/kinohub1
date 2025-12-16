@@ -46,7 +46,7 @@ export default function WatchPage() {
   useEffect(() => {
     const name = data?.nameRu || data?.nameOriginal;
     const yr = data?.year ? ` (${data.year})` : '';
-    document.title = name ? `${name}${yr} | NX` : 'Фильм | NX';
+    document.title = name ? `${name}${yr} | NX` : 'NX';
   }, [data]);
 
   const src = `https://api.linktodo.ws/embed/kp/${encodeURIComponent(String(id))}?host=kinobd.net`;
@@ -61,7 +61,7 @@ export default function WatchPage() {
         <>
           <h1 className="text-xl font-semibold">
             {(data?.nameRu || data?.nameOriginal || 'Фильм')}
-            {data?.year ? ` (${data.year})` : ''} <span className="text-gray-400">| NX</span>
+            {data?.year ? ` (${data.year})` : ''}
           </h1>
           <div className="aspect-video overflow-hidden rounded-2xl bg-black ring-1 ring-white/10">
             <iframe src={src} allowFullScreen className="h-full w-full" />
