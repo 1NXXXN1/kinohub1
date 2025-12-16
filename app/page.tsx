@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { fetchTopFilms, fetchTopSeries, fetchTopCartoons, fallbackPopularFromTMDB, take } from '../lib/client-api';
+import { fetchTopFilms, fallbackPopularFromTMDB, take } from '../lib/client-api';
 
 type KpFilm = {
   filmId?: number;
@@ -61,8 +61,6 @@ function HeartButton({ item }: { item: KpFilm }){
 
 export default function Home() {
   const [films, setFilms] = useState<KpFilm[]>([]);
-  const [series, setSeries] = useState<KpFilm[]>([]);
-  const [cartoons, setCartoons] = useState<KpFilm[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -70,11 +68,9 @@ export default function Home() {
     async function run() {
       setLoading(true);
       try {
-        const results = await Promise.allSettled([fetchTopFilms(), fetchTopSeries(), fetchTopCartoons()]);
+        const results = await Promise.allSettled([fetchTopFilms()]);
         if (cancelled) return;
         const f0 = results[0].status === 'fulfilled' ? results[0].value : null;
-        const s0 = results[1].status === 'fulfilled' ? results[1].value : null;
-        const c0 = results[2].status === 'fulfilled' ? results[2].value : null;
         if (f0) setFilms(take((f0.films || f0.items || []), 10));
         else {
           const tmdb = await fallbackPopularFromTMDB();
@@ -85,8 +81,6 @@ export default function Home() {
             year: r.release_date ? Number(r.release_date.slice(0,4)) : undefined
           })), 10));
         }
-        if (s0) setSeries(take((s0.items || s0.films || []), 10));
-        if (c0) setCartoons(take((c0.items || c0.films || []), 10));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -127,7 +121,7 @@ export default function Home() {
     <section className="space-y-6 px-4 py-6 max-w-7xl mx-auto">
       {loading && <p className="text-sm text-mute">Загрузка…</p>}
       <Section title="Популярные (ТОП 10)" items={films} tag="фильм" />
-      {!loading && films.length === 0 && series.length === 0 && cartoons.length === 0 && (
+      {!loading && films.length === 0 && (
         <p className="text-sm text-mute">Ничего не найдено. Проверьте ключи или добавьте TMDB ключ.</p>
       )}
     </section>
