@@ -46,7 +46,7 @@ export default function WatchPage() {
   useEffect(() => {
     const name = data?.nameRu || data?.nameOriginal;
     const yr = data?.year ? ` (${data.year})` : '';
-    document.title = name ? `${name}${yr} | NX` : 'Фильм | NX';
+    document.title = name ? `${name}${yr}`;
   }, [data]);
 
   const src = `https://api.linktodo.ws/embed/kp/${encodeURIComponent(String(id))}?host=kinobd.net`;
