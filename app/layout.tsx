@@ -1,5 +1,4 @@
-export const revalidate = 3600;
-
+import FavoritesHydrator from '@/components/FavoritesHydrator';
 import './globals.css';
 import Link from 'next/link';
 import { SearchBar } from '../components/SearchBar';
@@ -29,7 +28,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }){
           <main className="py-6">{children}</main>
           <footer className="py-10 text-center text-sm text-gray-500">© {new Date().getFullYear()} NXMedia</footer>
         </div>
-      </body>
+        <FavoritesHydrator />
+</body>
     </html>
   );
 }

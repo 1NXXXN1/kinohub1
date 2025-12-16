@@ -1,5 +1,3 @@
-export const revalidate = 3600;
-
 import { getTop, searchAll } from '../../../lib/api';
 import { Grid } from '../../../components/grid';
 import { MediaCard } from '../../../components/media-card';

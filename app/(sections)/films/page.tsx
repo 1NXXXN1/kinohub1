@@ -1,16 +1,16 @@
+import { getTop, searchAll } from '../../../lib/api';
+import { Grid } from '../../../components/grid';
+import { MediaCard } from '../../../components/media-card';
+import { SearchBox } from '../../../components/search';
 
-export const revalidate = 3600;
-
-export default async function Page(props: {
-  searchParams?: Promise<{ q?: string }>
-}) {
-  const sp = await props.searchParams;
-  const q = sp?.q;
-
+export default async function Page({ searchParams }: { searchParams: { q?: string }} ){
+  const q = searchParams?.q;
+  const data = q ? await searchAll(q) : await getTop('film');
   return (
-    <div>
-      <h1>Films</h1>
-      {q && <p>Search query: {q}</p>}
-    </div>
+    <section className="space-y-4">
+      <h1 className="text-xl font-semibold">Filmlar</h1>
+      <SearchBox />
+      <Grid>{data.map(m => <MediaCard key={m.id+m.title} m={m} />)}</Grid>
+    </section>
   );
 }
