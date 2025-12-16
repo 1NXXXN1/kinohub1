@@ -1,34 +1,41 @@
 import { NextResponse } from 'next/server';
 
-const BASE = process.env.KINOPOISK_API_BASE || 'https://kinopoiskapiunofficial.tech';
-
-function* roundRobin<T>(arr: T[]) {
-  let i = 0;
-  while (true) { yield arr[i % arr.length]; i++; }
-}
+const BASE = 'https://kinopoiskapiunofficial.tech';
+const KEYS = (process.env.KINOPOISK_API_KEYS || '').split(',').map(k => k.trim()).filter(Boolean);
 
 export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const path = url.searchParams.get('path') || '';
-  const keys = (process.env.KINOPOISK_API_KEYS || '').split(',').map(s => s.trim()).filter(Boolean);
-  if (!path) return NextResponse.json({ error: 'path required' }, { status: 400 });
-  if (keys.length === 0) return NextResponse.json({ error: 'no api keys' }, { status: 500 });
+  const { searchParams } = new URL(req.url);
+  const path = searchParams.get('path');
 
-  const gen = roundRobin(keys);
-  for (let i = 0; i < keys.length; i++) {
-    const key = gen.next().value as string;
+  if (!path) {
+    return NextResponse.json({ error: 'Missing path' }, { status: 400 });
+  }
+
+  for (const key of KEYS) {
     try {
       const res = await fetch(`${BASE}${path}`, {
-        headers: { 'X-API-KEY': key, 'Content-Type': 'application/json' },
+        headers: {
+          'X-API-KEY': key,
+          'Accept': 'application/json'
+        },
         cache: 'no-store'
       });
+
       if (res.ok) {
-        const data = await res.json();
-        const resp = NextResponse.json(data);
-        resp.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=30');
-        return resp;
+        return NextResponse.json(await res.json());
       }
-    } catch (e) {}
+
+      // agar noto‘g‘ri endpoint bo‘lsa → keyingi kalitga o‘tmaymiz
+      if (res.status === 404) break;
+
+    } catch (e) {
+      // keyingi API key bilan davom etamiz
+      continue;
+    }
   }
-  return NextResponse.json({ error: 'all keys failed' }, { status: 502 });
+
+  return NextResponse.json(
+    { error: 'Kinopoisk API failed (check endpoint or keys)' },
+    { status: 502 }
+  );
 }
