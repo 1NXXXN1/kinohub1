@@ -52,7 +52,7 @@ export default function WatchPage() {
     document.title = name ? `${name}${yr} | NX` : 'NX';
   }, [data]);
 
-  const src = `https://api.linktodo.ws/embed/kp/${encodeURIComponent(String(id))}?host=kinobd.net`;
+  const src = `https://m3.frkp.site/?id=${encodeURIComponent(String(id))}`;
 
   return (
     <section className="space-y-4">
