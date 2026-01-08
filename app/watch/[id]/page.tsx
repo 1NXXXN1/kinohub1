@@ -52,7 +52,7 @@ export default function WatchPage() {
     document.title = name ? `${name}${yr} | NX` : 'NX';
   }, [data]);
 
-  const src = `https://m3.frkp.site/?id=${encodeURIComponent(String(id))}`;
+  const src = `https://ddbb.lol/?id=${encodeURIComponent(String(id))}&n=0`;
 
   return (
     <section className="space-y-4">
