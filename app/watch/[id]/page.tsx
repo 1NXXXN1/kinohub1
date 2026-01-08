@@ -66,12 +66,12 @@ export default function WatchPage() {
             {(data?.nameRu || data?.nameOriginal || 'Фильм')}
             {data?.year ? ` (${data.year})` : ''}
           </h1>
-          <div className="aspect-video overflow-hidden rounded-2xl bg-black ring-1 ring-white/10">
-            <iframe src={src} allowFullScreen className="h-full w-full" />
-          </div>
           {data?.description && (
             <p className="text-sm text-gray-400 leading-relaxed">{data.description}</p>
           )}
+          <div className="aspect-video overflow-hidden rounded-2xl bg-black ring-1 ring-white/10">
+            <iframe src={src} allowFullScreen className="h-full w-full" />
+          </div>
         </>
       )}
     </section>
